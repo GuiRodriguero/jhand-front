@@ -1,6 +1,7 @@
-import { Settings } from 'lucide-react';
+import { Settings, Spade, SquareChartGantt } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { SidebarLink } from './SidebarLink';
 
 export function Sidebar() {
   const { t } = useTranslation();
@@ -15,16 +16,11 @@ export function Sidebar() {
         </div>
       </div>
 
+      <SidebarLink to="/hand-result" icon={Spade} title={t('sidebar.hands')} />
+      <SidebarLink to="/pre-flop-chart" icon={SquareChartGantt} title={t('sidebar.preFlopChart')} />
+
       <div className="p-4 border-t border-border mt-auto">
-        <Link
-          to="/settings"
-          className="flex items-center justify-between px-3 py-3 rounded-lg text-gray-400 hover:bg-surface/50 hover:text-white transition-all duration-200 group"
-        >
-          <div className="flex items-center gap-4">
-            <Settings size={18} />
-            <span className="font-medium text-sm">{t('sidebar.settings')}</span>
-          </div>
-        </Link>
+        <SidebarLink to="/settings" icon={Settings} title={t('sidebar.settings')} />
       </div>
     </aside>
   );

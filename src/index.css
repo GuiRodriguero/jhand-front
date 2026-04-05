@@ -27,5 +27,7 @@
 @layer base {
   body {
     background-color: var(--color-background);
+    color: #99a1af;
+    @apply antialiased;
   }
 }
