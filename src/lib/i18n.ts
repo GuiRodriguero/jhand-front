@@ -6,10 +6,32 @@ export const resources = {
     translation: {
       default: {
         success: 'Sucesso!',
+        loading: 'Carregando...',
+        emptyResult: 'Nenhum resultado encontrado',
       },
       sidebar: {
+        hands: 'Mãos',
+        preFlopChart: 'Tabela Pre Flop',
         settings: 'Configurações',
         dashboard: 'Painel',
+      },
+      handResult: {
+        filters: {
+          title: 'Filtros',
+          handId: 'Hand ID',
+          button: {
+            clear: 'Limpar',
+            apply: 'Aplicar filtros',
+          },
+          table: {
+            sessionId: 'Sessão',
+            cards: 'Cartas',
+            board: 'Board',
+            dateTime: 'Data / Hora',
+            handRank: 'Mão',
+            netProfit: 'Lucro',
+          },
+        },
       },
       settings: {
         upload: {
@@ -30,10 +52,32 @@ export const resources = {
     translation: {
       default: {
         success: 'Success!',
+        loading: 'Loading...',
+        emptyResult: 'No results found',
       },
       sidebar: {
+        hands: 'Hands',
+        preFlopChart: 'Pre Flop Chart',
         settings: 'Settings',
         dashboard: 'Dashboard',
+      },
+      handResult: {
+        filters: {
+          title: 'Filters',
+          handId: 'Hand ID',
+          button: {
+            clear: 'Clear',
+            apply: 'Apply filters',
+          },
+          table: {
+            sessionId: 'Session',
+            cards: 'Cards',
+            board: 'Board',
+            dateTime: 'Date / Time',
+            handRank: 'Hand Rank',
+            netProfit: 'Net Profit',
+          },
+        },
       },
       settings: {
         upload: {
@@ -59,5 +103,3 @@ i18n.use(initReactI18next).init({
     escapeValue: false,
   },
 });
-
-export default i18n;
