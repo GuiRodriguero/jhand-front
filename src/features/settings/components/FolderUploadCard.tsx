@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { UploadCloud, FolderUp, FileText } from 'lucide-react';
 import { useToast } from '../../../components/ui/toast/ToastContext';
 import { useTranslation } from 'react-i18next';
+import { importApi } from '../services/importApi';
 
 export function FolderUploadCard() {
   const { showToast } = useToast();
@@ -27,32 +28,13 @@ export function FolderUploadCard() {
     if (txtFiles.length === 0) return;
     setIsUploading(true);
 
-    const formData = new FormData();
-    txtFiles.forEach((file) => {
-      formData.append('files', file);
-    });
-
-    formData.append('heroName', 'GuiRodri2013');
-
     try {
-      const response = await fetch('http://localhost:8080/v1/hands/import/batch', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        showToast(t('settings.upload.errorToast'), 'error');
-        throw new Error(t('settings.upload.errorToast'));
-      }
-
-      if (response.status === 204) {
-        showToast(t('settings.upload.successToast'), 'success');
-        setTxtFiles([]);
-      }
-
-      setIsUploading(false);
+      await importApi.importBatch(txtFiles, 'GuiRodri2013');
+      showToast(t('settings.upload.successToast'), 'success');
       setTxtFiles([]);
-    } catch (error) {
+    } catch {
+      showToast(t('settings.upload.errorToast'), 'error');
+    } finally {
       setIsUploading(false);
     }
   };
@@ -74,7 +56,6 @@ export function FolderUploadCard() {
         onChange={handleFolderSelect}
         className="hidden"
         multiple
-        // @ts-ignore
         webkitdirectory="true"
         directory="true"
       />
