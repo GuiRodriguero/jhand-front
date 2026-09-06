@@ -2,6 +2,7 @@ import { Filter } from 'lucide-react';
 import { JHandInput } from '../../../components/ui/text-input/JHandInput';
 import { useTranslation } from 'react-i18next';
 import { JHandCard } from '../../../components/ui/card/JHandCard';
+import { HeroCardsFilter } from './HeroCardsFilter';
 
 interface HandResultFiltersProps {
   handId: string;
@@ -37,43 +38,41 @@ export function HandResultFilters({
         <span className="font-semibold text-sm">{t('handResult.filters.title')}</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <JHandInput
-          label={t('handResult.filters.handId')}
-          type="text"
-          value={handId}
-          onChange={(e) => onHandIdChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') onApply();
-          }}
-        />
-        <JHandInput
-          label={t('handResult.filters.sessionId')}
-          type="text"
-          value={sessionId}
-          onChange={(e) => onSessionIdChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') onApply();
-          }}
-        />
-        <JHandInput
-          label={t('handResult.filters.heroCards')}
-          type="text"
-          value={heroCards}
-          onChange={(e) => onHeroCardsChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') onApply();
-          }}
-        />
-        <JHandInput
-          label={t('handResult.filters.handRank')}
-          type="text"
-          value={handRank}
-          onChange={(e) => onHandRankChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') onApply();
-          }}
-        />
+      <div className="flex flex-col md:flex-row md:items-end gap-4">
+        <div className="flex-1">
+          <JHandInput
+            label={t('handResult.filters.handId')}
+            type="text"
+            value={handId}
+            onChange={(e) => onHandIdChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') onApply();
+            }}
+          />
+        </div>
+        <div className="flex-1">
+          <JHandInput
+            label={t('handResult.filters.sessionId')}
+            type="text"
+            value={sessionId}
+            onChange={(e) => onSessionIdChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') onApply();
+            }}
+          />
+        </div>
+        <div className="flex-1">
+          <JHandInput
+            label={t('handResult.filters.handRank')}
+            type="text"
+            value={handRank}
+            onChange={(e) => onHandRankChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') onApply();
+            }}
+          />
+        </div>
+        <HeroCardsFilter value={heroCards} onChange={onHeroCardsChange} />
       </div>
 
       <div className="flex justify-end items-center gap-3 mt-2 pt-4 border-t border-border-subtle">
