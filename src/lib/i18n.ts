@@ -19,6 +19,12 @@ export const resources = {
         filters: {
           title: 'Filtros',
           handId: 'Hand ID',
+          sessionId: 'Sessão',
+          heroCards: 'Cartas do Herói',
+          heroCardsSlot: 'Carta {{index}}',
+          heroCardsRank: 'Valor',
+          heroCardsSuit: 'Naipe',
+          handRank: 'Mão',
           button: {
             clear: 'Limpar',
             apply: 'Aplicar filtros',
@@ -65,6 +71,12 @@ export const resources = {
         filters: {
           title: 'Filters',
           handId: 'Hand ID',
+          sessionId: 'Session',
+          heroCards: 'Hero Cards',
+          heroCardsSlot: 'Card {{index}}',
+          heroCardsRank: 'Rank',
+          heroCardsSuit: 'Suit',
+          handRank: 'Hand Rank',
           button: {
             clear: 'Clear',
             apply: 'Apply filters',

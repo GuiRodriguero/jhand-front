@@ -1,6 +1,8 @@
 import { ChevronRight } from 'lucide-react';
 import type { HandResult } from '../types/handResult.types';
 import { JHandCard } from '../../../components/ui/card/JHandCard';
+import { PlayingCard } from '../../../components/ui/playing-card/PlayingCard.tsx';
+import { parseCards } from '../../../components/ui/playing-card/parseCards';
 import { useTranslation } from 'react-i18next';
 
 interface HandResultTableProps {
@@ -11,9 +13,22 @@ interface HandResultTableProps {
 export function HandResultTable({ hands, isLoading }: HandResultTableProps) {
   const { t } = useTranslation();
 
+  const renderCards = (value?: string) => {
+    const cards = parseCards(value);
+    if (cards.length === 0) return '-';
+
+    return (
+      <div className="flex items-center gap-1">
+        {cards.map((card, index) => (
+          <PlayingCard key={`${card.rank}${card.suit}-${index}`} rank={card.rank} suit={card.suit} size="sm" />
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <JHandCard className="mt-6">
-      <div className="overflow-x-auto flex-1">
+    <JHandCard className="h-full overflow-hidden custom-scrollbar">
+      <div className="overflow-auto flex-1">
         <table className="w-full text-left border-collapse">
           <thead className="sticky top-0 bg-surface border-b border-border z-10">
             <tr className="text-xs uppercase tracking-wider">
@@ -27,26 +42,28 @@ export function HandResultTable({ hands, isLoading }: HandResultTableProps) {
             </tr>
           </thead>
           <tbody className="text-sm">
-            {hands && hands.length > 0 ? hands.map((hand) => (
-              <tr
-                key={hand.handId}
-                className="border-b border-border-subtle hover:bg-surface-light/50 transition-colors cursor-pointer group"
-              >
-                <td className="p-4">{hand.sessionId || '-'}</td>
-                <td className="p-4 font-semibold text-white tracking-widest">{hand.heroCards || '-'}</td>
-                <td className="p-4">{hand.board || '-'}</td>
-                <td className="p-4">{hand.handRank || '-'}</td>
-                <td
-                  className={`p-4 text-right font-bold ${(hand.netProfit || 0) >= 0 ? 'text-success-content' : 'text-error-content'}`}
-                >
-                  {(hand.netProfit || 0) >= 0 ? '+' : ''}${(Math.abs(hand.netProfit || 0)).toFixed(2)}
-                </td>
-                <td className="p-4">{hand.date ? new Date(hand.date).toLocaleString() : '-'}</td>
-                <td className="p-4 text-right text-gray-500 group-hover:text-blue-400">
-                  <ChevronRight size={18} />
-                </td>
-              </tr>
-            )) : null}
+            {hands && hands.length > 0
+              ? hands.map((hand) => (
+                  <tr
+                    key={hand.handId}
+                    className="border-b border-border-subtle hover:bg-surface-light/50 transition-colors cursor-pointer group"
+                  >
+                    <td className="p-4">{hand.sessionId || '-'}</td>
+                    <td className="p-4">{renderCards(hand.heroCards)}</td>
+                    <td className="p-4">{renderCards(hand.board)}</td>
+                    <td className="p-4">{hand.handRank || '-'}</td>
+                    <td
+                      className={`p-4 text-right font-bold ${(hand.netProfit || 0) > 0 ? 'text-success-content' : 'text-error-content'}`}
+                    >
+                      {(hand.netProfit || 0) > 0 ? '+' : '-'}${Math.abs(hand.netProfit || 0).toFixed(2)}
+                    </td>
+                    <td className="p-4">{hand.date ? new Date(hand.date).toLocaleString() : '-'}</td>
+                    <td className="p-4 text-right text-gray-500 group-hover:text-blue-400">
+                      <ChevronRight size={18} />
+                    </td>
+                  </tr>
+                ))
+              : null}
           </tbody>
         </table>
 
