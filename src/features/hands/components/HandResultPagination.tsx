@@ -1,41 +1,48 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { JHandButton } from '@/components/ui/button/JHandButton';
 
 interface HandResultPaginationProps {
-  page: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  isLoading?: boolean;
+  readonly page: number;
+  readonly totalPages: number;
+  readonly onPageChange: (page: number) => void;
+  readonly isLoading?: boolean;
 }
 
 export function HandResultPagination({ page, totalPages, onPageChange, isLoading }: HandResultPaginationProps) {
+  const { t } = useTranslation();
+
   if (totalPages <= 1) return null;
 
   const isFirst = page <= 0;
   const isLast = page >= totalPages - 1;
 
   return (
-    <div className="flex items-center justify-end gap-3 text-sm text-gray-400">
-      <button
-        type="button"
+    <nav
+      aria-label={t('handResult.pagination.label')}
+      className="flex items-center justify-end gap-3 text-sm text-gray-400"
+    >
+      <JHandButton
+        variant="outline"
         disabled={isFirst || isLoading}
         onClick={() => onPageChange(page - 1)}
-        className="flex items-center gap-1 px-3 py-2 rounded-lg border border-border transition-colors hover:text-white hover:bg-surface-light/50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+        aria-label={t('handResult.pagination.previous')}
       >
-        <ChevronLeft size={16} />
-      </button>
+        <ChevronLeft size={16} aria-hidden="true" />
+      </JHandButton>
 
       <span className="tabular-nums">
         {page + 1} / {totalPages}
       </span>
 
-      <button
-        type="button"
+      <JHandButton
+        variant="outline"
         disabled={isLast || isLoading}
         onClick={() => onPageChange(page + 1)}
-        className="flex items-center gap-1 px-3 py-2 rounded-lg border border-border transition-colors hover:text-white hover:bg-surface-light/50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+        aria-label={t('handResult.pagination.next')}
       >
-        <ChevronRight size={16} />
-      </button>
-    </div>
+        <ChevronRight size={16} aria-hidden="true" />
+      </JHandButton>
+    </nav>
   );
 }

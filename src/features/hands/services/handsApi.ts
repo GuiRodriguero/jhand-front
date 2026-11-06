@@ -1,27 +1,25 @@
-import { api } from '../../../lib/axios';
-import type { HandResult, HandResultFiltersValue, Page } from '../types/handResult.types';
+import { api } from '@/lib/axios';
+import type { Page } from '@/lib/page.types';
+import type { HandResult, HandResultFiltersValue } from '../types/handResult.types';
+
+export interface FindAllHandsParams {
+  readonly page: number;
+  readonly size: number;
+  readonly filters: HandResultFiltersValue;
+  readonly signal?: AbortSignal;
+}
 
 export const handsApi = {
-  findAll: async (page = 0, size = 20, filters?: HandResultFiltersValue): Promise<Page<HandResult>> => {
-    const params: Record<string, unknown> = { page, size };
+  findAll: async ({ page, size, filters, signal }: FindAllHandsParams): Promise<Page<HandResult>> => {
+    const params: Record<string, string | number> = { page, size };
 
-    if (filters?.handId?.trim()) {
-      params.handId = filters.handId.trim();
+    const entries = Object.entries(filters) as [keyof HandResultFiltersValue, string][];
+    for (const [key, value] of entries) {
+      const trimmed = value.trim();
+      if (trimmed) params[key] = trimmed;
     }
 
-    if (filters?.sessionId?.trim()) {
-      params.sessionId = filters.sessionId.trim();
-    }
-
-    if (filters?.heroCards?.trim()) {
-      params.heroCards = filters.heroCards.trim();
-    }
-
-    if (filters?.handRank?.trim()) {
-      params.handRank = filters.handRank.trim();
-    }
-
-    const { data } = await api.get('/v1/hands', { params });
+    const { data } = await api.get<Page<HandResult>>('/v1/hands', { params, signal });
     return data;
   },
 };

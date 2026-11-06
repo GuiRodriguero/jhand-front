@@ -1,25 +1,26 @@
-export type HandResult = {
-  handId: string;
-  sessionId: string;
-  heroCards: string;
-  board: string;
-  handRank: string;
-  netProfit: number;
-  date: string;
-};
+export type Position = 'BTN' | 'SB' | 'BB' | 'CO' | 'MP' | 'UTG';
 
-export type HandResultFiltersValue = {
-  handId?: string;
-  sessionId?: string;
-  heroCards?: string;
-  handRank?: string;
-};
+export interface HandResult {
+  readonly handId: string;
+  readonly sessionId: string;
+  readonly position: Position | null;
+  readonly heroCards: string;
+  readonly board: string | null;
+  readonly handRank: string | null;
+  readonly netProfit: number;
+  readonly date: string;
+}
 
-export type Page<T> = {
-  content: T[];
-  totalPages: number;
-  number: number;
-  size: number;
-  first: boolean;
-  last: boolean;
+export interface HandResultFiltersValue {
+  readonly handId: string;
+  readonly sessionId: string;
+  readonly heroCards: string;
+  readonly handRank: string;
+}
+
+export const EMPTY_HAND_RESULT_FILTERS: HandResultFiltersValue = {
+  handId: '',
+  sessionId: '',
+  heroCards: '',
+  handRank: '',
 };

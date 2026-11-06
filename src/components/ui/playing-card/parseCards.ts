@@ -1,26 +1,24 @@
-import type { Suit } from './PlayingCard.tsx';
+import { RANKS, SUITS } from './card.constants';
+import type { ParsedCard, Rank, Suit } from './card.types';
 
-export interface ParsedCard {
-  rank: string;
-  suit: Suit;
+export function isRank(value: string): value is Rank {
+  return (RANKS as readonly string[]).includes(value);
 }
 
-const VALID_SUITS: readonly Suit[] = ['s', 'h', 'c', 'd'];
+export function isSuit(value: string): value is Suit {
+  return (SUITS as readonly string[]).includes(value);
+}
 
 export function parseCards(value?: string | null): ParsedCard[] {
   if (!value) return [];
 
-  const normalized = value.trim();
-  if (!normalized) return [];
-
   const regex = /([2-9tjqka])([shcd])/gi;
   const cards: ParsedCard[] = [];
 
-  let match: RegExpExecArray | null;
-  while ((match = regex.exec(normalized)) !== null) {
+  for (const match of value.matchAll(regex)) {
     const rank = match[1].toUpperCase();
-    const suit = match[2].toLowerCase() as Suit;
-    if (VALID_SUITS.includes(suit)) {
+    const suit = match[2].toLowerCase();
+    if (isRank(rank) && isSuit(suit)) {
       cards.push({ rank, suit });
     }
   }
