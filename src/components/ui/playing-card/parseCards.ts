@@ -9,6 +9,10 @@ export function isSuit(value: string): value is Suit {
   return (SUITS as readonly string[]).includes(value);
 }
 
+export function toCardCode(card: ParsedCard): string {
+  return `${card.rank}${card.suit}`;
+}
+
 export function parseCards(value?: string | null): ParsedCard[] {
   if (!value) return [];
 

@@ -19,6 +19,7 @@ export const resources = {
         navigation: 'Navegação principal',
         hands: 'Mãos',
         preFlopChart: 'Tabela Pre Flop',
+        equityCalculator: 'Calculadora de Equity',
         settings: 'Configurações',
         dashboard: 'Painel',
       },
@@ -35,9 +36,50 @@ export const resources = {
       },
       preFlopChart: {
         title: 'Tabela Pre Flop',
+        description:
+          'Ranges de abertura (RFI) ilustrativos para mesas 6-max. Escolha um pincel e clique ou arraste sobre as mãos para editar.',
+        matrixLabel: 'Matriz de mãos iniciais',
+        positions: 'Posição',
+        brush: {
+          label: 'Pincel',
+          raise: 'Raise',
+          call: 'Call',
+          mixed: 'Raise 50% / Call 50%',
+          fold: 'Fold (apagar)',
+        },
+        stats: {
+          title: 'Resumo do range',
+          combos: '{{combos}} de {{total}} combos',
+          percentage: '{{percentage}} das mãos',
+        },
+        button: {
+          reset: 'Restaurar padrão',
+          clear: 'Limpar tudo',
+        },
       },
       equityCalculator: {
         title: 'Calculadora de Equity',
+        description:
+          'Clique num espaço e escolha a carta no baralho. O próximo espaço vazio é selecionado automaticamente.',
+        hero: 'Herói',
+        villain: 'Vilão',
+        board: 'Board',
+        flop: 'Flop',
+        turn: 'Turn',
+        river: 'River',
+        deck: 'Baralho',
+        slotLabel: '{{group}} — carta {{index}}',
+        tie: 'Empate',
+        scenarios: '{{total}} cenários avaliados',
+        monteCarlo: 'Pré-flop: estimativa por simulação de Monte Carlo.',
+        incomplete: 'Escolha as 2 cartas do herói e as 2 do vilão para calcular.',
+        invalidBoard: 'O board precisa ter 0, 3, 4 ou 5 cartas, preenchidas em ordem.',
+        error: 'Não foi possível calcular a equity. Tente novamente.',
+        calculating: 'Calculando...',
+        button: {
+          swap: 'Trocar herói e vilão',
+          clear: 'Limpar tudo',
+        },
       },
       handResult: {
         filters: {
@@ -104,6 +146,7 @@ export const resources = {
         navigation: 'Main navigation',
         hands: 'Hands',
         preFlopChart: 'Pre Flop Chart',
+        equityCalculator: 'Equity Calculator',
         settings: 'Settings',
         dashboard: 'Dashboard',
       },
@@ -120,9 +163,49 @@ export const resources = {
       },
       preFlopChart: {
         title: 'Pre Flop Chart',
+        description:
+          'Illustrative opening ranges (RFI) for 6-max tables. Pick a brush and click or drag over the hands to edit.',
+        matrixLabel: 'Starting hands matrix',
+        positions: 'Position',
+        brush: {
+          label: 'Brush',
+          raise: 'Raise',
+          call: 'Call',
+          mixed: 'Raise 50% / Call 50%',
+          fold: 'Fold (erase)',
+        },
+        stats: {
+          title: 'Range summary',
+          combos: '{{combos}} of {{total}} combos',
+          percentage: '{{percentage}} of hands',
+        },
+        button: {
+          reset: 'Reset to default',
+          clear: 'Clear all',
+        },
       },
       equityCalculator: {
         title: 'Equity Calculator',
+        description: 'Click a slot and pick the card from the deck. The next empty slot is selected automatically.',
+        hero: 'Hero',
+        villain: 'Villain',
+        board: 'Board',
+        flop: 'Flop',
+        turn: 'Turn',
+        river: 'River',
+        deck: 'Deck',
+        slotLabel: '{{group}} — card {{index}}',
+        tie: 'Tie',
+        scenarios: '{{total}} scenarios evaluated',
+        monteCarlo: 'Pre-flop: Monte Carlo simulation estimate.',
+        incomplete: 'Pick the 2 hero cards and the 2 villain cards to calculate.',
+        invalidBoard: 'The board must have 0, 3, 4 or 5 cards, filled in order.',
+        error: 'Could not calculate the equity. Please try again.',
+        calculating: 'Calculating...',
+        button: {
+          swap: 'Swap hero and villain',
+          clear: 'Clear all',
+        },
       },
       handResult: {
         filters: {

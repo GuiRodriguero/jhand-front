@@ -108,7 +108,10 @@ src/
 ├── components/ui/          # REUSABLE UI components (domain-agnostic)
 │   ├── button/             # JHandButton (variants: primary | ghost | outline)
 │   ├── card/               # JHandCard  (base container)
-│   ├── playing-card/       # PlayingCard + parseCards + card.constants (RANKS, SUITS)
+│   ├── card-picker/        # CardDeckPicker (52-card clickable deck, disabled = used cards)
+│   ├── hand-matrix/        # HandMatrix (13x13 grid, click/drag paint, frequency gradients)
+│   │                       #   + matrixHands (labels/combos) + rangeNotation (parseRange "22+, ATs+")
+│   ├── playing-card/       # PlayingCard + parseCards/toCardCode + card.constants (RANKS, SUITS)
 │   │                       #   + card.types (Rank, Suit, ParsedCard) + cardStyles (SUIT_SYMBOL/COLOR)
 │   ├── sidebar/            # Sidebar + SidebarLink
 │   ├── text-input/         # JHandInput (input with forwardRef)
@@ -328,5 +331,7 @@ Before considering a task complete:
 - ❌ Using/mentioning testing libraries that are not in `package.json`.
 - ❌ Fetching with `useEffect` + `useState` — use a TanStack Query hook.
 - ❌ Concatenating classes with template strings — use `cn()`.
+- ❌ Two files in the same folder whose names differ only by case (e.g. `HandMatrix.tsx` + `handMatrix.ts`):
+  breaks the build on Windows/macOS.
 - ❌ Deep relative imports (`../../../`) or imports with `.ts`/`.tsx` extensions — use `@/`.
 - ❌ Reimplementing card parsing/rendering instead of using `parseCards` / `PlayingCard`.
