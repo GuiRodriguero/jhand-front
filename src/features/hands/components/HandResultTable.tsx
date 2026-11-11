@@ -5,6 +5,7 @@ import { PlayingCard } from '@/components/ui/playing-card/PlayingCard';
 import { parseCards } from '@/components/ui/playing-card/parseCards';
 import { cn } from '@/lib/cn';
 import type { HandResult } from '../types/handResult.types';
+import { formatBigBlinds } from '../utils/handResultTableUtils';
 
 interface HandResultTableProps {
   readonly hands: readonly HandResult[];
@@ -54,6 +55,9 @@ export function HandResultTable({ hands, isLoading, isRefreshing = false, isErro
                 {t('handResult.table.handRank')}
               </th>
               <th scope="col" className="p-4 font-medium text-right">
+                {t('handResult.table.totalPot')}
+              </th>
+              <th scope="col" className="p-4 font-medium text-right">
                 {t('handResult.table.netProfit')}
               </th>
               <th scope="col" className="p-4 font-medium">
@@ -79,13 +83,15 @@ export function HandResultTable({ hands, isLoading, isRefreshing = false, isErro
                 <td className="p-4">{renderCards(hand.heroCards)}</td>
                 <td className="p-4">{renderCards(hand.board)}</td>
                 <td className="p-4">{hand.handRank || '-'}</td>
+                <td className="p-4 text-right">{hand.totalPot == null ? '-' : hand.totalPot.toFixed(2)}</td>
                 <td
                   className={cn(
                     'p-4 text-right font-bold',
-                    (hand.netProfit || 0) > 0 ? 'text-success-content' : 'text-error-content',
+                    (hand.netProfitInBb ?? 0) > 0 && 'text-success-content',
+                    (hand.netProfitInBb ?? 0) < 0 && 'text-error-content',
                   )}
                 >
-                  {(hand.netProfit || 0) > 0 ? '+' : '-'}${Math.abs(hand.netProfit || 0).toFixed(2)}
+                  {formatBigBlinds(hand.netProfitInBb)}
                 </td>
                 <td className="p-4">{hand.date ? new Date(hand.date).toLocaleString() : '-'}</td>
                 <td className="p-4 text-right text-foreground-muted group-hover:text-primary-content">

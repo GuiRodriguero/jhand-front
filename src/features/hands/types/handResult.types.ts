@@ -8,6 +8,8 @@ export interface HandResult {
   readonly board: string | null;
   readonly handRank: string | null;
   readonly netProfit: number;
+  readonly netProfitInBb: number | null;
+  readonly totalPot: number | null;
   readonly date: string;
 }
 
