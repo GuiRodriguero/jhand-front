@@ -100,10 +100,14 @@ src/
 │   ├── cn.ts               # cn() = clsx + tailwind-merge
 │   ├── page.types.ts       # Page<T> (Spring Data pagination)
 │   ├── queryClient.ts      # TanStack QueryClient (defaults)
-│   └── queryKeys.ts        # Central query keys (shared so features can invalidate each other)
+│   ├── queryKeys.ts        # Central query keys (shared so features can invalidate each other)
+│   └── sessionType.ts      # SessionType ('CASH_GAME' | 'TOURNAMENT'), default + `?type=` URL reader
 │
 ├── layouts/
 │   └── MainLayout.tsx      # Application shell (Sidebar + <main>)
+│
+├── components/session-type-tabs/  # SessionTypeTabs: Cash / Tournament tabs shared by Hands and Sessions
+│                           #   (shared but domain-aware, hence outside components/ui)
 │
 ├── components/ui/          # REUSABLE UI components (domain-agnostic)
 │   ├── button/             # JHandButton (variants: primary | ghost | outline)
@@ -113,6 +117,8 @@ src/
 │   │                       #   + matrixHands (labels/combos) + rangeNotation (parseRange "22+, ATs+")
 │   ├── playing-card/       # PlayingCard + parseCards/toCardCode + card.constants (RANKS, SUITS)
 │   │                       #   + card.types (Rank, Suit, ParsedCard) + cardStyles (SUIT_SYMBOL/COLOR)
+│   ├── pagination/         # JHandPagination (previous/next + "page / total", hidden when 1 page)
+│   ├── segmented-control/  # JHandSegmentedControl (generic tabs: role="tablist", options with icon)
 │   ├── sidebar/            # Sidebar + SidebarLink
 │   ├── text-input/         # JHandInput (input with forwardRef)
 │   ├── select/             # (reserved)
@@ -122,6 +128,7 @@ src/
 │   ├── dashboard/
 │   ├── hands/
 │   ├── pre-flop-chart/
+│   ├── sessions/           # Sessions list (one imported file = one session), filtered by session type
 │   └── settings/
 │
 ├── @types/                 # Type augmentation (i18next.d.ts: type-safe keys; react.d.ts: webkitdirectory)
@@ -271,8 +278,13 @@ features/<feature>/
 - Frontend DTOs **mirror** the backend ones. Pagination follows Spring Data's `Page`
   (hence the `Page<T>` type).
 - Known endpoints:
-  - `GET /v1/hands` — paginated list of hands (params: `page`, `size`, `handId?`, `sessionId?`,
-    `heroCards?`, `handRank?`).
+  - `GET /v1/hands` — paginated list of hands (params: `page`, `size`, `sessionType`, `handId?`,
+    `sessionId?`, `heroCards?`, `handRank?`).
+  - `GET /v1/sessions` — paginated list of sessions (params: `page`, `size`, `type`). Returns
+    `{ sessionId, type, handCount, startTime, netProfit }`, sorted by `startTime` desc.
+- **Session type**: Hands and Sessions always show **one** type (Cash or Tournament, tab in the header,
+  `?type=` in the URL, default Cash). Never mix them: cash amounts are **dollars**, tournament amounts
+  are **chips** (`formatSessionProfit`).
   - `POST /v1/hands/import/batch` — batch import of `.txt` files (`multipart/form-data`,
     fields `files` + `heroName`).
 

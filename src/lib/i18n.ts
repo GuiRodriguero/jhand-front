@@ -14,10 +14,21 @@ export const resources = {
         errorResult: 'Não foi possível carregar os dados. Tente novamente.',
         close: 'Fechar',
         notifications: 'Notificações',
+        pagination: {
+          label: 'Paginação',
+          previous: 'Página anterior',
+          next: 'Próxima página',
+        },
+      },
+      sessionType: {
+        label: 'Tipo de jogo',
+        CASH_GAME: 'Cash',
+        TOURNAMENT: 'Torneio',
       },
       sidebar: {
         navigation: 'Navegação principal',
         hands: 'Mãos',
+        sessions: 'Sessões',
         preFlopChart: 'Tabela Pre Flop',
         equityCalculator: 'Calculadora de Equity',
         settings: 'Configurações',
@@ -103,13 +114,18 @@ export const resources = {
           board: 'Board',
           dateTime: 'Data / Hora',
           handRank: 'Mão',
-          netProfit: 'Lucro',
+          totalPot: 'Pote',
+          netProfit: 'Lucro (BB)',
           details: 'Detalhes',
         },
-        pagination: {
-          label: 'Paginação',
-          previous: 'Página anterior',
-          next: 'Próxima página',
+      },
+      sessions: {
+        title: 'Sessões',
+        table: {
+          sessionId: 'Sessão',
+          startTime: 'Data',
+          handCount: 'Mãos',
+          netProfit: 'Resultado',
         },
       },
       settings: {
@@ -141,10 +157,21 @@ export const resources = {
         errorResult: 'Could not load the data. Please try again.',
         close: 'Close',
         notifications: 'Notifications',
+        pagination: {
+          label: 'Pagination',
+          previous: 'Previous page',
+          next: 'Next page',
+        },
+      },
+      sessionType: {
+        label: 'Game type',
+        CASH_GAME: 'Cash',
+        TOURNAMENT: 'Tournament',
       },
       sidebar: {
         navigation: 'Main navigation',
         hands: 'Hands',
+        sessions: 'Sessions',
         preFlopChart: 'Pre Flop Chart',
         equityCalculator: 'Equity Calculator',
         settings: 'Settings',
@@ -229,13 +256,18 @@ export const resources = {
           board: 'Board',
           dateTime: 'Date / Time',
           handRank: 'Hand Rank',
-          netProfit: 'Net Profit',
+          totalPot: 'Pot',
+          netProfit: 'Net Profit (BB)',
           details: 'Details',
         },
-        pagination: {
-          label: 'Pagination',
-          previous: 'Previous page',
-          next: 'Next page',
+      },
+      sessions: {
+        title: 'Sessions',
+        table: {
+          sessionId: 'Session',
+          startTime: 'Date',
+          handCount: 'Hands',
+          netProfit: 'Result',
         },
       },
       settings: {
