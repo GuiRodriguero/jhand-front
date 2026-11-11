@@ -12,6 +12,10 @@ export function useImportBatchMutation() {
 
   return useMutation({
     mutationFn: ({ files, heroName }: ImportBatchVariables) => importApi.importBatch(files, heroName),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.hands.all }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.hands.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.sessions.all }),
+      ]),
   });
 }
