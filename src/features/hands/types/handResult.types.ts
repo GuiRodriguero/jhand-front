@@ -1,4 +1,4 @@
-export type Position = 'BTN' | 'SB' | 'BB' | 'CO' | 'MP' | 'UTG';
+import type { Position } from '@/lib/position';
 
 export interface HandResult {
   readonly handId: string;

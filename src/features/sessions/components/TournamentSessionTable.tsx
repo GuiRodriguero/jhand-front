@@ -3,6 +3,7 @@ import { JHandTable } from '@/components/ui/table/JHandTable';
 import { cn } from '@/lib/cn';
 import type { TournamentSession } from '../types/session.types';
 import { formatPlacement, formatSessionMoney, formatSessionProfit } from '../utils/sessionTableUtils';
+import { SessionTableRow } from './SessionTableRow';
 
 interface TournamentSessionTableProps {
   readonly sessions: readonly TournamentSession[];
@@ -47,15 +48,7 @@ export function TournamentSessionTable({ sessions, isLoading, isRefreshing, isEr
       }
     >
       {sessions.map((session) => (
-        <tr
-          key={session.sessionId}
-          className="border-b border-border-subtle hover:bg-surface-light/50 transition-colors"
-        >
-          <td className="p-4">
-            <div className="max-w-md truncate" title={session.sessionId}>
-              {session.sessionId}
-            </div>
-          </td>
+        <SessionTableRow key={session.sessionId} sessionId={session.sessionId}>
           <td className="p-4">{session.startTime ? new Date(session.startTime).toLocaleString() : '-'}</td>
           <td className="p-4 text-right tabular-nums">{session.handCount ?? '-'}</td>
           <td className="p-4 text-right tabular-nums">{formatPlacement(session.finishPosition, i18n.language)}</td>
@@ -70,7 +63,7 @@ export function TournamentSessionTable({ sessions, isLoading, isRefreshing, isEr
           >
             {formatSessionProfit(session.netProfit, session)}
           </td>
-        </tr>
+        </SessionTableRow>
       ))}
     </JHandTable>
   );

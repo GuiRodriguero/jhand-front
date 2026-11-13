@@ -2,6 +2,7 @@ interface BasePokerSession {
   readonly sessionId: string;
   readonly handCount: number | null;
   readonly startTime: string | null;
+  readonly endTime: string | null;
   readonly netProfit: number | null;
 }
 

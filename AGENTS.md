@@ -33,6 +33,7 @@ This repository (`jhand-front`) is **frontend only**. It consumes a **separate R
 | Tests              | **Vitest** (pure functions / utils)                        |
 | i18n               | **i18next** + **react-i18next** (pt / en, type-safe)       |
 | Icons              | **lucide-react**                                           |
+| Charts             | **recharts 3**, only behind `components/ui/line-chart`     |
 | Lint               | **ESLint 9** (flat config) + **typescript-eslint**         |
 | Formatting         | **Prettier**                                               |
 
@@ -92,15 +93,18 @@ domain lives isolated in `src/features/<feature>/`, and whatever is genuinely sh
 ```
 src/
 ├── main.tsx                # Entry point: mounts global providers (Router, Toast) and imports i18n/css
-├── App.tsx                 # Route definitions (inside MainLayout)
+├── App.tsx                 # Route definitions (inside MainLayout). Views with charts are `lazy` + <Suspense>,
+│                           #   so recharts lives in its own chunk, downloaded only when a chart page opens
 │
 ├── lib/                    # Cross-cutting infra, no UI
-│   ├── axios.ts            # Single axios instance (baseURL, timeout)
+│   ├── axios.ts            # Single axios instance (baseURL, timeout) + isNotFoundError (backend 404)
 │   ├── i18n.ts             # i18next config + translation dictionary (pt/en)
 │   ├── cn.ts               # cn() = clsx + tailwind-merge
 │   ├── page.types.ts       # Page<T> (Spring Data pagination)
 │   ├── queryClient.ts      # TanStack QueryClient (defaults)
-│   ├── queryKeys.ts        # Central query keys (shared so features can invalidate each other)
+│   ├── queryKeys.ts        # Central query keys (shared so features can invalidate each other); every
+│   │                       #   sessions key starts with 'sessions', so invalidating `sessions.all` covers them
+│   ├── position.ts         # Position ('BTN' | 'SB' | 'BB' | 'CO' | 'MP' | 'UTG'), shared by Hands and Sessions
 │   └── sessionType.ts      # SessionType ('CASH_GAME' | 'TOURNAMENT'), default + `?type=` URL reader
 │
 ├── layouts/
@@ -113,6 +117,10 @@ src/
 │   ├── button/             # JHandButton (variants: primary | ghost | outline)
 │   ├── card/               # JHandCard  (base container)
 │   ├── card-picker/        # CardDeckPicker (52-card clickable deck, disabled = used cards)
+│   ├── line-chart/         # JHandLineChart: single-series line on recharts (point-number X axis, nice Y
+│   │                       #   ticks incl. zero via lineChartScale.niceDomain, tooltip, arrow keys, click a
+│   │                       #   point). Features use JHandLineChart, never recharts directly; colors are the
+│   │                       #   theme CSS variables (`var(--color-info)`)
 │   ├── hand-matrix/        # HandMatrix (13x13 grid, click/drag paint, frequency gradients)
 │   │                       #   + matrixHands (labels/combos) + rangeNotation (parseRange "22+, ATs+")
 │   ├── playing-card/       # PlayingCard + parseCards/toCardCode + card.constants (RANKS, SUITS)
@@ -120,6 +128,7 @@ src/
 │   ├── pagination/         # JHandPagination (previous/next + "page / total", hidden when 1 page)
 │   ├── segmented-control/  # JHandSegmentedControl (generic tabs: role="tablist", options with icon)
 │   ├── sidebar/            # Sidebar + SidebarLink
+│   ├── status/             # JHandLoading (spinner + default.loading), JHandErrorMessage (alert + message)
 │   ├── table/              # JHandTable (table shell: header slot + loading / error / empty states)
 │   ├── text-input/         # JHandInput (input with forwardRef)
 │   ├── select/             # (reserved)
@@ -129,7 +138,9 @@ src/
 │   ├── dashboard/
 │   ├── hands/
 │   ├── pre-flop-chart/
-│   ├── sessions/           # Sessions list (one imported file = one session), filtered by session type
+│   ├── sessions/           # Sessions list (one imported file = one session), filtered by session type;
+│   │                       #   a row opens SessionDetailView (/sessions/:sessionId): summary tiles, chart,
+│   │                       #   best/worst hand, result by position, link to the session's hands
 │   └── settings/
 │
 ├── @types/                 # Type augmentation (i18next.d.ts: type-safe keys; react.d.ts: webkitdirectory)
@@ -282,12 +293,20 @@ features/<feature>/
   - `GET /v1/hands` — paginated list of hands (params: `page`, `size`, `sessionType`, `handId?`,
     `sessionId?`, `heroCards?`, `handRank?`).
   - `GET /v1/sessions` — paginated list of sessions (params: `page`, `size`, `type`). Returns
-    `{ sessionId, type, handCount, startTime, netProfit }` plus the type's own fields, sorted by `startTime` desc.
-    `PokerSession` is a union discriminated by `type`: `CashSession` adds `bigBlind` (`null` for sessions imported
-    before it existed), `TournamentSession` adds `buyIn, prize, finishPosition, realMoney`. Narrow on `type` before
+    `{ sessionId, type, handCount, startTime, endTime, netProfit }` plus the type's own fields, sorted by `startTime`
+    desc (`endTime` = start of the last hand). `PokerSession` is a union discriminated by `type`: `CashSession` adds
+    `bigBlind`, `TournamentSession` adds `buyIn, prize, finishPosition, realMoney`. Narrow on `type` before
     reading them. Each type has its own table component (`CashSessionTable` / `TournamentSessionTable`);
     `keepPreviousData` only applies while the type stays the same, so a tab switch shows the loading state. While a tournament is still running
     `prize`/`finishPosition` are `null` and `netProfit` is the buy-in lost (−buy-in).
+  - `GET /v1/sessions/{sessionId}` — one session, same body as a list item; unknown id → 404 (`isNotFoundError`).
+  - `GET /v1/sessions/{sessionId}/hand-stats` — `SessionHandStats`: `points[]` (one per hand, by time:
+    `cumulativeNetProfit(InBb)`, `startingStack`, `stackInBb`), `vpipPercentage`, `pfrPercentage`, `bbPer100`,
+    `bestHand`/`worstHand` (by BB), `byPosition[]`. Its amounts are in the **hands'** unit (tournament: chips).
+    The chart plots the cumulative result for cash and the **stack** for tournaments (`chartValues`): the cumulative
+    BB result is not a stack once the blinds grow.
+  - Session ids are file names (spaces, `$`, `'`): always `encodeURIComponent` them in API paths and routes
+    (`sessionsApi`, `sessionDetailPath`). Links to the Hands view use its `handId` / `sessionId` filters (`handsPath`).
 - **Session type**: Hands and Sessions always show **one** type (Cash or Tournament, tab in the header,
   `?type=` in the URL, default Cash). Never mix them. Units:
   - cash hands and cash sessions are **dollars**;
