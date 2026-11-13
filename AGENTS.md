@@ -238,6 +238,7 @@ features/<feature>/
   - Primary action: `bg-primary`, `hover:bg-primary-hover`, `text-primary-content`, `ring-primary-ring`.
   - States: `success` / `error` / `info` (+ `-content` variants for text and `-shadow`).
   - Playing cards: `bg-card-face`, `text-card-red`, `text-card-black`.
+  - Tournament outcome: `text-trophy-gold` (+ `fill-trophy-gold`) for a win, `text-trophy-silver` for ITM.
   - A token `--color-x` becomes the class `bg-x` / `text-x` (**not** `bg-color-x`).
 - The theme is **dark** by default.
 - For scrollable lists, reuse the `.custom-scrollbar` utility (defined in `index.css`).
@@ -302,7 +303,9 @@ features/<feature>/
   - `GET /v1/sessions` — paginated list of sessions (params: `page`, `size`, `type`). Returns
     `{ sessionId, type, handCount, startTime, endTime, netProfit }` plus the type's own fields, sorted by `startTime`
     desc (`endTime` = start of the last hand). `PokerSession` is a union discriminated by `type`: `CashSession` adds
-    `bigBlind`, `TournamentSession` adds `buyIn, prize, finishPosition, realMoney`. Narrow on `type` before
+    `bigBlind`, `TournamentSession` adds `buyIn, prize, finishPosition, realMoney, outcome` (`TournamentOutcome`:
+    `WINNER | IN_THE_MONEY | OUT_OF_THE_MONEY | RUNNING`, computed by the backend — never re-derive it from
+    prize/placement; `TournamentOutcomeIcon` draws a gold trophy for WINNER, silver for ITM). Narrow on `type` before
     reading them. Each type has its own table component (`CashSessionTable` / `TournamentSessionTable`);
     `keepPreviousData` only applies while the type stays the same, so a tab switch shows the loading state. While a tournament is still running
     `prize`/`finishPosition` are `null` and `netProfit` is the buy-in lost (−buy-in).

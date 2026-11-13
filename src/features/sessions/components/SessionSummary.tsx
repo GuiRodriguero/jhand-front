@@ -4,6 +4,7 @@ import type { PokerSession } from '../types/session.types';
 import { formatBigBlinds, formatPercentage } from '../utils/sessionDetailUtils';
 import { formatPlacement, formatSessionMoney, formatSessionProfit } from '../utils/sessionTableUtils';
 import { SessionStatTile } from './SessionStatTile';
+import { TournamentOutcomeIcon } from './TournamentOutcomeIcon';
 
 interface SessionSummaryProps {
   readonly session: PokerSession;
@@ -21,6 +22,7 @@ export function SessionSummary({ session, stats }: SessionSummaryProps) {
           <SessionStatTile
             label={t('sessions.detail.stats.finishPosition')}
             value={formatPlacement(session.finishPosition, i18n.language)}
+            icon={<TournamentOutcomeIcon outcome={session.outcome} size={22} />}
           />
           <SessionStatTile
             label={t('sessions.detail.stats.buyIn')}

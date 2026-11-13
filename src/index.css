@@ -42,6 +42,9 @@
   --color-hero: var(--color-blue-500);
   --color-villain: var(--color-orange-500);
 
+  --color-trophy-gold: var(--color-amber-400);
+  --color-trophy-silver: var(--color-zinc-300);
+
   --color-scrollbar-thumb: var(--color-zinc-600);
   --color-scrollbar-thumb-hover: var(--color-zinc-500);
 }

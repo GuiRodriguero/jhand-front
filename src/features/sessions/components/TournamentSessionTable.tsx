@@ -4,6 +4,7 @@ import { cn } from '@/lib/cn';
 import type { TournamentSession } from '../types/session.types';
 import { formatPlacement, formatSessionMoney, formatSessionProfit } from '../utils/sessionTableUtils';
 import { SessionTableRow } from './SessionTableRow';
+import { TournamentOutcomeIcon } from './TournamentOutcomeIcon';
 
 interface TournamentSessionTableProps {
   readonly sessions: readonly TournamentSession[];
@@ -51,7 +52,12 @@ export function TournamentSessionTable({ sessions, isLoading, isRefreshing, isEr
         <SessionTableRow key={session.sessionId} sessionId={session.sessionId}>
           <td className="p-4">{session.startTime ? new Date(session.startTime).toLocaleString() : '-'}</td>
           <td className="p-4 text-right tabular-nums">{session.handCount ?? '-'}</td>
-          <td className="p-4 text-right tabular-nums">{formatPlacement(session.finishPosition, i18n.language)}</td>
+          <td className="p-4 text-right tabular-nums">
+            <span className="inline-flex items-center justify-end gap-2">
+              <TournamentOutcomeIcon outcome={session.outcome} />
+              {formatPlacement(session.finishPosition, i18n.language)}
+            </span>
+          </td>
           <td className="p-4 text-right tabular-nums">{formatSessionMoney(session.buyIn, session)}</td>
           <td className="p-4 text-right tabular-nums">{formatSessionMoney(session.prize, session)}</td>
           <td

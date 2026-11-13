@@ -121,6 +121,10 @@ export const resources = {
       },
       sessions: {
         title: 'Sessões',
+        outcome: {
+          WINNER: 'Campeão',
+          IN_THE_MONEY: 'Premiado (ITM)',
+        },
         table: {
           sessionId: 'Sessão',
           startTime: 'Data',
@@ -306,6 +310,10 @@ export const resources = {
       },
       sessions: {
         title: 'Sessions',
+        outcome: {
+          WINNER: 'Winner',
+          IN_THE_MONEY: 'In the money (ITM)',
+        },
         table: {
           sessionId: 'Session',
           startTime: 'Date',
