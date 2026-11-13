@@ -3,8 +3,10 @@ import { useSearchParams } from 'react-router-dom';
 import { SessionTypeTabs } from '@/components/session-type-tabs/SessionTypeTabs';
 import { JHandPagination } from '@/components/ui/pagination/JHandPagination';
 import { sessionTypeFromSearchParams, type SessionType } from '@/lib/sessionType';
-import { SessionTable } from '../components/SessionTable';
+import { CashSessionTable } from '../components/CashSessionTable';
+import { TournamentSessionTable } from '../components/TournamentSessionTable';
 import { useSessionsQuery } from '../hooks/useSessionsQuery';
+import type { CashSession, TournamentSession } from '../types/session.types';
 import { pageFromSearchParams, toSearchParams } from '../utils/sessionSearchParams';
 
 const PAGE_SIZE = 20;
@@ -16,6 +18,9 @@ export function SessionsView() {
   const page = pageFromSearchParams(searchParams);
 
   const { data, isPending, isError, isPlaceholderData } = useSessionsQuery({ page, size: PAGE_SIZE, type });
+
+  const sessions = data?.content ?? [];
+  const tableState = { isLoading: isPending, isRefreshing: isPlaceholderData, isError };
 
   const handleTypeChange = (nextType: SessionType) => {
     setSearchParams(toSearchParams(nextType, 0));
@@ -33,13 +38,17 @@ export function SessionsView() {
       </header>
 
       <div className="flex-1 min-h-0">
-        <SessionTable
-          sessions={data?.content ?? []}
-          sessionType={type}
-          isLoading={isPending}
-          isRefreshing={isPlaceholderData}
-          isError={isError}
-        />
+        {type === 'TOURNAMENT' ? (
+          <TournamentSessionTable
+            sessions={sessions.filter((session): session is TournamentSession => session.type === 'TOURNAMENT')}
+            {...tableState}
+          />
+        ) : (
+          <CashSessionTable
+            sessions={sessions.filter((session): session is CashSession => session.type === 'CASH_GAME')}
+            {...tableState}
+          />
+        )}
       </div>
 
       <JHandPagination

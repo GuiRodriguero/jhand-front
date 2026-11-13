@@ -120,6 +120,7 @@ src/
 │   ├── pagination/         # JHandPagination (previous/next + "page / total", hidden when 1 page)
 │   ├── segmented-control/  # JHandSegmentedControl (generic tabs: role="tablist", options with icon)
 │   ├── sidebar/            # Sidebar + SidebarLink
+│   ├── table/              # JHandTable (table shell: header slot + loading / error / empty states)
 │   ├── text-input/         # JHandInput (input with forwardRef)
 │   ├── select/             # (reserved)
 │   └── toast/              # ToastContext.ts + ToastProvider.tsx + useToast.ts (one export kind per file)
@@ -284,7 +285,8 @@ features/<feature>/
     `{ sessionId, type, handCount, startTime, netProfit }` plus the type's own fields, sorted by `startTime` desc.
     `PokerSession` is a union discriminated by `type`: `CashSession` adds `bigBlind` (`null` for sessions imported
     before it existed), `TournamentSession` adds `buyIn, prize, finishPosition, realMoney`. Narrow on `type` before
-    reading them (rows of the previous tab can still show while switching, `keepPreviousData`). While a tournament is still running
+    reading them. Each type has its own table component (`CashSessionTable` / `TournamentSessionTable`);
+    `keepPreviousData` only applies while the type stays the same, so a tab switch shows the loading state. While a tournament is still running
     `prize`/`finishPosition` are `null` and `netProfit` is the buy-in lost (−buy-in).
 - **Session type**: Hands and Sessions always show **one** type (Cash or Tournament, tab in the header,
   `?type=` in the URL, default Cash). Never mix them. Units:

@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/queryKeys';
 import type { SessionType } from '@/lib/sessionType';
 import { sessionsApi } from '../services/sessionsApi';
@@ -13,6 +13,7 @@ export function useSessionsQuery({ page, size, type }: UseSessionsQueryParams) {
   return useQuery({
     queryKey: queryKeys.sessions.list({ page, size, type }),
     queryFn: ({ signal }) => sessionsApi.findAll({ page, size, type, signal }),
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey[2].type === type ? previousData : undefined,
   });
 }
