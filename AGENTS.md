@@ -36,6 +36,7 @@ This repository (`jhand-front`) is **frontend only**. It consumes a **separate R
 | Charts             | **recharts 3**, only behind `components/ui/line-chart`     |
 | Lint               | **ESLint 9** (flat config) + **typescript-eslint**         |
 | Formatting         | **Prettier**                                               |
+| CI                 | GitHub Actions (`.github/workflows/pull-request.yml`)      |
 
 > There is **no** global client-state management (Redux/Zustand/etc.). **Server state** (data from
 > the API) lives in **TanStack Query**; UI state is local per _view_ + occasional Context API;
@@ -47,10 +48,16 @@ This repository (`jhand-front`) is **frontend only**. It consumes a **separate R
 npm run dev       # development server (Vite + HMR)
 npm run build     # tsc -b && vite build (type-check + production build)
 npm run lint      # eslint . (type-aware rules)
+npm run format         # prettier --write . (fixes formatting)
+npm run format:check   # prettier --check . (fails on unformatted files)
 npm test          # vitest run
 npm run test:watch
 npm run preview   # preview of the production build
 ```
+
+> **CI:** every pull request runs `.github/workflows/pull-request.yml` (Node 24): `npm ci` → `format:check` →
+> `lint` → `test` → `build`. Any failing step fails the PR, so run the same commands locally first.
+> `.prettierrc` uses `endOfLine: auto`, so the check passes on Windows checkouts with `core.autocrlf=true` too.
 
 ---
 
@@ -341,6 +348,7 @@ features/<feature>/
 - Verification after any change:
 
   ```bash
+  npm run format:check
   npm run build   # includes tsc -b (type-check)
   npm run lint
   npm test
@@ -359,7 +367,8 @@ Before considering a task complete:
 - [ ] Styles with **Tailwind utilities + semantic tokens**; no per-component CSS.
 - [ ] Reuse base components (`JHandCard`, `JHandInput`, `PlayingCard`, `parseCards`...) instead of
       duplicating.
-- [ ] `npm run build`, `npm run lint` and `npm test` pass without errors.
+- [ ] `npm run format:check`, `npm run build`, `npm run lint` and `npm test` pass without errors (the CI runs
+      all four on every pull request).
 - [ ] Accessibility: icon-only buttons have `aria-label`, decorative icons `aria-hidden`, labels
       linked to inputs.
 - [ ] Changes consistent with the **style of the file/neighborhood** you edited.
