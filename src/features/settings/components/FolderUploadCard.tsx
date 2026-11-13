@@ -1,51 +1,56 @@
-import { useRef, useState } from 'react';
-import { UploadCloud, FolderUp, FileText } from 'lucide-react';
-import { useToast } from '../../../components/ui/toast/ToastContext';
+import { useId, useRef, useState, type ChangeEvent } from 'react';
+import { FileText, FolderUp, UploadCloud } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { importApi } from '../services/importApi';
+import { JHandButton } from '@/components/ui/button/JHandButton';
+import { useToast } from '@/components/ui/toast/useToast';
+import { useImportBatchMutation } from '../hooks/useImportBatchMutation';
 
 export function FolderUploadCard() {
   const { showToast } = useToast();
   const { t } = useTranslation();
+  const titleId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [txtFiles, setTxtFiles] = useState<File[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
+  const importBatch = useImportBatchMutation();
 
   const handleSelectClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFolderSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFolderSelect = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const allFiles = Array.from(event.target.files);
-      const onlyTxt = allFiles.filter((file) => file.name.endsWith('.txt'));
-
-      setTxtFiles(onlyTxt);
+      setTxtFiles(allFiles.filter((file) => file.name.endsWith('.txt')));
     }
   };
 
-  const handleUpload = async () => {
+  const handleUpload = () => {
     if (txtFiles.length === 0) return;
-    setIsUploading(true);
 
-    try {
-      await importApi.importBatch(txtFiles, 'GuiRodri2013');
-      showToast(t('settings.upload.successToast'), 'success');
-      setTxtFiles([]);
-    } catch {
-      showToast(t('settings.upload.errorToast'), 'error');
-    } finally {
-      setIsUploading(false);
-    }
+    importBatch.mutate(
+      { files: txtFiles, heroName: 'GuiRodri2013' },
+      {
+        onSuccess: () => {
+          showToast(t('settings.upload.successToast'), 'success');
+          setTxtFiles([]);
+        },
+        onError: () => showToast(t('settings.upload.errorToast'), 'error'),
+      },
+    );
   };
 
   return (
-    <div className="bg-surface rounded-xl border border-border p-6 w-full max-w-2xl shadow-lg">
+    <section
+      aria-labelledby={titleId}
+      className="bg-surface rounded-xl border border-border p-6 w-full max-w-2xl shadow-lg"
+    >
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2 bg-blue-500/10 rounded-lg">
-          <UploadCloud className="text-info-content" size={20} />
+        <div className="p-2 bg-info/10 rounded-lg">
+          <UploadCloud className="text-info-content" size={20} aria-hidden="true" />
         </div>
-        <h2 className="text-lg font-semibold text-white">{t('settings.upload.title')}</h2>
+        <h2 id={titleId} className="text-lg font-semibold text-foreground-strong">
+          {t('settings.upload.title')}
+        </h2>
       </div>
 
       <p className="text-sm text-gray-400 mb-6 leading-relaxed">{t('settings.upload.description')}</p>
@@ -58,40 +63,39 @@ export function FolderUploadCard() {
         multiple
         webkitdirectory="true"
         directory="true"
+        tabIndex={-1}
+        aria-hidden="true"
       />
 
       <div className="flex flex-col gap-4">
         <button
+          type="button"
           onClick={handleSelectClick}
-          className="w-full flex flex-col items-center justify-center gap-3 border-2 border-dashed border-border hover:border-blue-500/50 bg-surface-light hover:bg-surface-lighter rounded-xl py-10 transition-all cursor-pointer group"
+          className="w-full flex flex-col items-center justify-center gap-3 border-2 border-dashed border-border hover:border-primary-ring/50 bg-surface-light hover:bg-surface-lighter rounded-xl py-10 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-ring"
         >
-          <FolderUp size={32} className="text-gray-500 group-hover:text-blue-400 transition-colors" />
+          <FolderUp
+            size={32}
+            className="text-foreground-muted group-hover:text-primary-content transition-colors"
+            aria-hidden="true"
+          />
           <span className="text-sm font-medium text-gray-300">{t('settings.upload.selectFolder')}</span>
         </button>
 
         {txtFiles.length > 0 && (
-          <div className="flex items-center justify-between bg-color-surface-light border border-border rounded-lg p-4 mt-2">
-            <div className="flex items-center gap-3">
-              <FileText className="text-gray-400" size={18} />
+          <div className="flex items-center justify-between bg-surface-light border border-border rounded-lg p-4 mt-2">
+            <div className="flex items-center gap-3" role="status">
+              <FileText className="text-gray-400" size={18} aria-hidden="true" />
               <span className="text-sm font-medium text-gray-200">
                 {t('settings.upload.filesFound', { count: txtFiles.length })}
               </span>
             </div>
 
-            <button
-              onClick={handleUpload}
-              disabled={isUploading}
-              className={`px-6 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${
-                isUploading
-                  ? 'bg-blue-600/50 text-white/50 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-900/20'
-              }`}
-            >
-              {isUploading ? `${t('settings.upload.btnProcessing')}` : `${t('settings.upload.btnSync')}`}
-            </button>
+            <JHandButton onClick={handleUpload} disabled={importBatch.isPending} className="font-bold">
+              {importBatch.isPending ? t('settings.upload.btnProcessing') : t('settings.upload.btnSync')}
+            </JHandButton>
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }

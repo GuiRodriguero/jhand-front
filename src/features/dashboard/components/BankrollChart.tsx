@@ -1,3 +1,7 @@
+import { useTranslation } from 'react-i18next';
+
 export function BankrollChart() {
-  return <span>Bankroll Chart</span>;
+  const { t } = useTranslation();
+
+  return <span>{t('dashboard.bankroll.title')}</span>;
 }
