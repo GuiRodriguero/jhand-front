@@ -35,6 +35,7 @@ export function SessionsView() {
       <div className="flex-1 min-h-0">
         <SessionTable
           sessions={data?.content ?? []}
+          sessionType={type}
           isLoading={isPending}
           isRefreshing={isPlaceholderData}
           isError={isError}

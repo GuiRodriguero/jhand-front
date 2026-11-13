@@ -2,18 +2,21 @@ import { AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { JHandCard } from '@/components/ui/card/JHandCard';
 import { cn } from '@/lib/cn';
+import type { SessionType } from '@/lib/sessionType';
 import type { PokerSession } from '../types/session.types';
-import { formatSessionProfit } from '../utils/sessionTableUtils';
+import { formatPlacement, formatSessionMoney, formatSessionProfit } from '../utils/sessionTableUtils';
 
 interface SessionTableProps {
   readonly sessions: readonly PokerSession[];
+  readonly sessionType: SessionType;
   readonly isLoading: boolean;
   readonly isRefreshing?: boolean;
   readonly isError: boolean;
 }
 
-export function SessionTable({ sessions, isLoading, isRefreshing = false, isError }: SessionTableProps) {
-  const { t } = useTranslation();
+export function SessionTable({ sessions, sessionType, isLoading, isRefreshing = false, isError }: SessionTableProps) {
+  const { t, i18n } = useTranslation();
+  const isTournament = sessionType === 'TOURNAMENT';
 
   return (
     <JHandCard className="h-full overflow-hidden custom-scrollbar">
@@ -33,6 +36,24 @@ export function SessionTable({ sessions, isLoading, isRefreshing = false, isErro
               <th scope="col" className="p-4 font-medium text-right">
                 {t('sessions.table.handCount')}
               </th>
+              {!isTournament && (
+                <th scope="col" className="p-4 font-medium text-right">
+                  {t('sessions.table.bigBlind')}
+                </th>
+              )}
+              {isTournament && (
+                <>
+                  <th scope="col" className="p-4 font-medium text-right">
+                    {t('sessions.table.finishPosition')}
+                  </th>
+                  <th scope="col" className="p-4 font-medium text-right">
+                    {t('sessions.table.buyIn')}
+                  </th>
+                  <th scope="col" className="p-4 font-medium text-right">
+                    {t('sessions.table.prize')}
+                  </th>
+                </>
+              )}
               <th scope="col" className="p-4 font-medium text-right">
                 {t('sessions.table.netProfit')}
               </th>
@@ -51,6 +72,11 @@ export function SessionTable({ sessions, isLoading, isRefreshing = false, isErro
                 </td>
                 <td className="p-4">{session.startTime ? new Date(session.startTime).toLocaleString() : '-'}</td>
                 <td className="p-4 text-right tabular-nums">{session.handCount ?? '-'}</td>
+                {isTournament ? (
+                  <TournamentCells session={session} language={i18n.language} />
+                ) : (
+                  <CashCells session={session} />
+                )}
                 <td
                   className={cn(
                     'p-4 text-right font-bold tabular-nums',
@@ -58,7 +84,7 @@ export function SessionTable({ sessions, isLoading, isRefreshing = false, isErro
                     (session.netProfit ?? 0) < 0 && 'text-error-content',
                   )}
                 >
-                  {formatSessionProfit(session.netProfit, session.type)}
+                  {formatSessionProfit(session.netProfit, session)}
                 </td>
               </tr>
             ))}
@@ -87,5 +113,31 @@ export function SessionTable({ sessions, isLoading, isRefreshing = false, isErro
         )}
       </div>
     </JHandCard>
+  );
+}
+
+/**
+ * The columns follow the selected tab, but while a tab switch is loading the rows still belong to the previous type
+ * (`keepPreviousData`), so each cell narrows on the row's own `type` and shows a dash otherwise.
+ */
+function CashCells({ session }: { readonly session: PokerSession }) {
+  const cash = session.type === 'CASH_GAME' ? session : null;
+  return <td className="p-4 text-right tabular-nums">{cash ? formatSessionMoney(cash.bigBlind, cash) : '-'}</td>;
+}
+
+function TournamentCells({ session, language }: { readonly session: PokerSession; readonly language: string }) {
+  const tournament = session.type === 'TOURNAMENT' ? session : null;
+  return (
+    <>
+      <td className="p-4 text-right tabular-nums">
+        {tournament ? formatPlacement(tournament.finishPosition, language) : '-'}
+      </td>
+      <td className="p-4 text-right tabular-nums">
+        {tournament ? formatSessionMoney(tournament.buyIn, tournament) : '-'}
+      </td>
+      <td className="p-4 text-right tabular-nums">
+        {tournament ? formatSessionMoney(tournament.prize, tournament) : '-'}
+      </td>
+    </>
   );
 }

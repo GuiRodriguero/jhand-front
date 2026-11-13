@@ -281,10 +281,18 @@ features/<feature>/
   - `GET /v1/hands` — paginated list of hands (params: `page`, `size`, `sessionType`, `handId?`,
     `sessionId?`, `heroCards?`, `handRank?`).
   - `GET /v1/sessions` — paginated list of sessions (params: `page`, `size`, `type`). Returns
-    `{ sessionId, type, handCount, startTime, netProfit }`, sorted by `startTime` desc.
+    `{ sessionId, type, handCount, startTime, netProfit }` plus the type's own fields, sorted by `startTime` desc.
+    `PokerSession` is a union discriminated by `type`: `CashSession` adds `bigBlind` (`null` for sessions imported
+    before it existed), `TournamentSession` adds `buyIn, prize, finishPosition, realMoney`. Narrow on `type` before
+    reading them (rows of the previous tab can still show while switching, `keepPreviousData`). While a tournament is still running
+    `prize`/`finishPosition` are `null` and `netProfit` is the buy-in lost (−buy-in).
 - **Session type**: Hands and Sessions always show **one** type (Cash or Tournament, tab in the header,
-  `?type=` in the URL, default Cash). Never mix them: cash amounts are **dollars**, tournament amounts
-  are **chips** (`formatSessionProfit`).
+  `?type=` in the URL, default Cash). Never mix them. Units:
+  - cash hands and cash sessions are **dollars**;
+  - tournament **hands** are **chips**;
+  - a tournament **session** is **prize − buy-in**, in dollars when `realMoney` is true and in play money (no
+    `$`) otherwise (`formatSessionProfit` / `formatSessionMoney`). The Tournament tab also shows Placement,
+    Buy-in and Prize; the Cash tab shows the session's big blind (Blind column).
   - `POST /v1/hands/import/batch` — batch import of `.txt` files (`multipart/form-data`,
     fields `files` + `heroName`).
 
@@ -300,6 +308,12 @@ features/<feature>/
 - Focus on **pure functions** (`parseCards`, `features/*/utils/*`). Extract logic out of components
   into `utils/` so it can be tested.
 - Import `describe` / `it` / `expect` explicitly from `'vitest'` (globals are off).
+- **One test per real scenario, as simple as possible — no filler.** A scenario is a distinct path through the code
+  under test (a branch, a rule, an edge the logic actually treats differently), not another input to the same
+  path. E.g. `formatSessionMoney` has three: missing value (`-`), dollars (cash or `realMoney`), play money —
+  one case each, not a table of amounts that all go through the same branch. Use `it.each` only when every row
+  hits a different branch/rule (e.g. `formatPlacement`: `1st`/`2nd`/`3rd`/`4th`/`11th` are different plural
+  rules). Cover every branch, including the fallback/error one.
 - To test **components**, first install `@testing-library/react` + `@testing-library/jest-dom` +
   `jsdom` and set `test.environment: 'jsdom'` in `vite.config.ts` — make it explicit in the response.
   Do **NOT** import testing libraries that are not in `package.json`.
